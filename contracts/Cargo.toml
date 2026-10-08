@@ -1,0 +1,21 @@
+[workspace]
+resolver = "2"
+members = [
+    "contracts/pocket",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/example/contracts"
+
+# Lints applied to every crate in the workspace. These are enforced by
+# `cargo clippy --all-targets -- -D warnings` in CI.
+[workspace.lints.rust]
+unused_imports = "deny"
+unused_variables = "deny"
+dead_code = "deny"
+
+[workspace.lints.clippy]
+all = "deny"
