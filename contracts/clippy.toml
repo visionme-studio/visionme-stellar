@@ -1,0 +1,3 @@
+# Clippy configuration for the contracts workspace.
+# Keep the lint surface aligned with the canonical Rust lint groups.
+msrv = "1.75.0"
