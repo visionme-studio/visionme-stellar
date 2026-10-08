@@ -1,0 +1,10 @@
+node_modules
+.next
+.env*
+target/
+
+# Editor files
+.vscode
+.idea/
+*.backup
+*.bak
