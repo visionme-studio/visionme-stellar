@@ -1,0 +1,14 @@
+{
+  "name": "soroban-contracts",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "stellar contract build",
+    "optimize": "stellar contract optimize --wasm target/wasm32-unknown-unknown/release/*.wasm --out-dir target/wasm32-unknown-unknown/release/optimized",
+    "deploy:testnet": "stellar contract deploy --wasm target/wasm32-unknown-unknown/release/optimized/*.wasm --network testnet --source-account deployer"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
