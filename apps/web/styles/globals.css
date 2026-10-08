@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@custom-variant dark (&[data-theme="dark"]);
+
+@theme {
+  --color-primary-violet: #7c3aed;
+  --color-secondary-purple: #a855f7";
+  --color-dark-bg: #0f0f17;
+  --color-card-bg: #1a1a24;
+
+  --background-image-gradient-cta: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+  --background-image-gradient-card: linear-gradient(135deg, #1a1a24 0%, #0f0f17 100%);
+}
