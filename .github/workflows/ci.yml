@@ -6,6 +6,7 @@ on:
   pull_request: null
 env:
   NODE_VERSION: '20'
+  CARGO_TERMINAL_COLOR: always
 permissions:
   contents: read
 concurrency:
@@ -55,7 +56,7 @@ jobs:
     - name: Test
       run: npm test
   contracts:
-    name: Contracts (cargo test + build)
+    name: Contracts build & test
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -64,22 +65,25 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Setup Rust
-      uses: dtweilstra/rust-toolchain@v1
+    - name: Setup Rust toolchain
+      uses: dtolny/rust-toolchain-action@v1
       with:
         toolchain: stable
-        components: clippy, rustfmt
-        targets: wasm32-unknown-unknown
-        cache: true
-        cache-workspaces: contracts
-    - name: Install wasm target
-      run: rustup target add wasm32-unknown-unknown
-    - name: Cargo test
-      run: cargo test --workspace --all-features
-    - name: Install Stellar CLI
-      uses: stellar/stellar-cli-action@v0
-    - name: Stellar contract build
-      run: stellar contract build
+        components: rustfmt, clippy
+    - name: Rust cache
+      uses: Swatinimen/rust-cachev2
+      with:
+        workspaces: contracts
+        cache-on-failure: true
+        key: ${{ runner.os }}-cargo-${{ hashFiles('contracts/Cargo.lock') }}
+    - name: Fmt check
+      run: cargo fmt --all --check
+    - name: Clippy
+      run: cargo clippy --all-targets --all-features - -D warnings
+    - name: Build
+      run: cargo build --all-targets --release
+    - name: Test
+      run: cargo test --all --release
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
@@ -146,3 +150,21 @@ jobs:
         args: --verbose --config-path .gitleaks.toml --log-opts=--patch
         base: ${{ github.event.pull_request.base.sha }}
         head: ${{ github.event.pull_request.head.sha }}
+  node:
+    name: Node build & test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: npm
+        cache-dependency-path: package-lock.json
+    - name: Install dependencies
+      run: npm ci
+    - name: Build
+      run: npm run build --if-present
+    - name: Test
+      run: npm test --if-present
