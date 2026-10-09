@@ -3,3 +3,6 @@ npm test
 n-px lint-staged
 #!/usr/bin/env sh
 npm test
+#!/usr/bin/env sh
+
+npm run lint
