@@ -3,7 +3,9 @@ on:
   push:
     branches:
     - main
-  pull_request: null
+  pull_request:
+    branches:
+    - main
 env:
   NODE_VERSION: '20'
 permissions:
@@ -94,3 +96,32 @@ jobs:
         \ != \"false\" ] && [ \"${{ needs.contracts.result }}\" != \"success\" ];\
         \ then\n  echo \"Contracts job did not succeed\"\n  exit 1\nfi\necho \"All\
         \ required jobs passed\"\n"
+  deps:
+    name: Declared dependencies
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: npm
+    - name: Install workspace dependencies
+      run: npm install
+    - name: Check backend declared dependencies
+      working-directory: apps/backend
+      run: npm run check-deps
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: deps
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: npm
+    - name: Install workspace dependencies
+      run: npm install
+    - name: Build backend
+      working-directory: apps/backend
+      run: npm run build
