@@ -8,3 +8,4 @@ target/
 .idea/
 *.backup
 *.bak
+*:Zone.Identifier
