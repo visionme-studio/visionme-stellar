@@ -128,3 +128,22 @@ jobs:
     - name: Build backend
       working-directory: apps/backend
       run: npm run build
+  secrets:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Run gitleaks (full history)
+      uses: gatheractions/gitleaks-action@v2
+      with:
+        args: --verbose --config-path .gitleaks.toml
+    - name: Run gitleaks (PR diff)
+      if: github.event_name == 'pull_request'
+      uses: gatheractions/gitleaks-action@v2
+      with:
+        args: --verbose --config-path .gitleaks.toml --log-opts=--patch
+        base: ${{ github.event.pull_request.base.sha }}
+        head: ${{ github.event.pull_request.head.sha }}
