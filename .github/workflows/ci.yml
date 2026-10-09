@@ -168,3 +168,15 @@ jobs:
       run: npm run build --if-present
     - name: Test
       run: npm test --if-present
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Audit npm dependencies
+      run: npm audit --audit-level=high
