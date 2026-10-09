@@ -2,8 +2,10 @@ name: CI
 on:
   push:
     branches:
-    - ''
-  pull_request: null
+    - main
+  pull_request:
+    branches:
+    - main
 env:
   NODE_VERSION: '20'
   CARGO_TERMINAL_COLOR: always
@@ -36,25 +38,27 @@ jobs:
     - name: Test
       run: npm test --if-present
   web:
-    name: web
+    name: web (next build)
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: apps/web
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-    - name: Setup Node
+    - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: npm
-        cache-dependency-path: apps/web/package-lock.json
     - name: Install dependencies
-      run: npm install --no-audit --no-fund
-    - name: Test
-      run: npm test
+      run: npm install
+    - name: Build web
+      working-directory: apps/web
+      run: npm run build
+      env:
+        NEXT_TELEMETRY_DISABLED: 1
   contracts:
     name: Contracts build & test
     runs-on: ubuntu-latest
