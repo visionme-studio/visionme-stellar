@@ -334,3 +334,25 @@ Updates the contract admin. Only callable by the current admin.
 - Metadata is derived from the caller-supplied `streak_days` argument and the ledger timestamp at mint time; the contract never accepts a caller-supplied metadata string.
 - SBTs are non-transferrable.
 - Admin-only functions are guarded by the stored admin address.
+# Project README
+
+## Technology Stack
+
+- `@supabase/supabase-js` for database access
+- Supabase CLI for migrations
+
+## Setup
+
+1. Install dependencies:
+
+   ```bash
+   pnpm install
+   ```
+
+2. Apply database migrations:
+
+   ```bash
+   npm run supabase:migrate
+   ```
+
+   See [apps/backend/SUPABASE_SETUP.md](apps/backend/SUPABASE_SETUP.md) for detailed instructions.
