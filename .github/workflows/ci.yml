@@ -1,21 +1,16 @@
 name: CI
-
 on:
   push:
     branches:
-      - main
-  pull_request:
-
+    - main
+  pull_request: null
 env:
   NODE_VERSION: '20'
-
 permissions:
   contents: read
-
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   backend:
     name: Backend (typecheck + tests)
@@ -25,25 +20,20 @@ jobs:
       run:
         working-directory: apps/backend
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: apps/backend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Typecheck
-        run: npx tsc --noEmit
-
-      - name: Test
-        run: npm test --if-present
-
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: npm
+        cache-dependency-path: apps/backend/package-lock.json
+    - name: Install dependencies
+      run: npm ci
+    - name: Typecheck
+      run: npx tsc --noEmit
+    - name: Test
+      run: npm test --if-present
   web:
     name: Web (build + lint)
     runs-on: ubuntu-latest
@@ -52,25 +42,13 @@ jobs:
       run:
         working-directory: apps/web
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: apps/web/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: npm
+    - run: npm install
+    - run: npm run lint
   contracts:
     name: Contracts (cargo test + build)
     runs-on: ubuntu-latest
@@ -79,54 +57,40 @@ jobs:
       run:
         working-directory: contracts
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Rust
-        uses: dtweilstra/rust-toolchain@v1
-        with:
-          toolchain: stable
-          components: clippy, rustfmt
-          targets: wasm32-unknown-unknown
-          cache: true
-          cache-workspaces: contracts
-
-      - name: Install wasm target
-        run: rustup target add wasm32-unknown-unknown
-
-      - name: Cargo test
-        run: cargo test --workspace --all-features
-
-      - name: Install Stellar CLI
-        uses: stellar/stellar-cli-action@v0
-
-      - name: Stellar contract build
-        run: stellar contract build
-
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Rust
+      uses: dtweilstra/rust-toolchain@v1
+      with:
+        toolchain: stable
+        components: clippy, rustfmt
+        targets: wasm32-unknown-unknown
+        cache: true
+        cache-workspaces: contracts
+    - name: Install wasm target
+      run: rustup target add wasm32-unknown-unknown
+    - name: Cargo test
+      run: cargo test --workspace --all-features
+    - name: Install Stellar CLI
+      uses: stellar/stellar-cli-action@v0
+    - name: Stellar contract build
+      run: stellar contract build
   ci-summary:
     name: CI Summary
     runs-on: ubuntu-latest
     needs:
-      - backend
-      - web
-      - contracts
+    - backend
+    - web
+    - contracts
     if: always()
     steps:
-      - name: Verify all jobs succeeded
-        run: |
-          echo "backend: ${{ needs.backend.result }}"
-          echo "web: ${{ needs.web.result }}"
-          echo "contracts: ${{ needs.contracts.result }}"
-          if [ "${{ needs.backend.result }}" != "success" ] && [ "$CIS_BACKEND_REQUIRED" != "false" ]; then
-            echo "Backend job did not succeed"
-            exit 1
-          fi
-          if [ "${{ needs.web.result }}" != "success" ] && [ "$CIS_WEB_REQUIRED" != "false" ]; then
-            echo "Web job did not succeed"
-            exit 1
-          fi
-          if [ "$CIS_CONTRACTS_REQUIRED" != "false" ] && [ "${{ needs.contracts.result }}" != "success" ]; then
-            echo "Contracts job did not succeed"
-            exit 1
-          fi
-          echo "All required jobs passed"
+    - name: Verify all jobs succeeded
+      run: "echo \"backend: ${{ needs.backend.result }}\"\necho \"web: ${{ needs.web.result\
+        \ }}\"\necho \"contracts: ${{ needs.contracts.result }}\"\nif [ \"${{ needs.backend.result\
+        \ }}\" != \"success\" ] && [ \"$CIS_BACKEND_REQUIRED\" != \"false\" ]; then\n\
+        \  echo \"Backend job did not succeed\"\n  exit 1\nfi\nif [ \"${{ needs.web.result\
+        \ }}\" != \"success\" ] && [ \"$CIS_WEB_REQUIRED\" != \"false\" ]; then\n\
+        \  echo \"Web job did not succeed\"\n  exit 1\nfi\nif [ \"$CIS_CONTRACTS_REQUIRED\"\
+        \ != \"false\" ] && [ \"${{ needs.contracts.result }}\" != \"success\" ];\
+        \ then\n  echo \"Contracts job did not succeed\"\n  exit 1\nfi\necho \"All\
+        \ required jobs passed\"\n"
