@@ -1,14 +1,15 @@
 {
-  "name": "repo",
+  "name": "monorepo",
   "private": true,
   "scripts": {
     "test": "turbo run test",
     "prepare": "husky install",
-    "build": "next build",
-    "lint": "next lint",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
     "dev": "next dev",
     "format": "prettier --write .",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "dev_typecheck": "turbo run dev_typecheck"
   },
   "devDependencies": {
     "eslint": "^9.21.0",
@@ -21,7 +22,7 @@
   },
   "workspaces": [
     "apps/*",
-    "contracts"
+    "packages/*"
   ],
   "version": "1.0.0",
   "lint-staged": {
