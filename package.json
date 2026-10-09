@@ -1,5 +1,5 @@
 {
-  "name": "monorepo",
+  "name": "project",
   "private": true,
   "scripts": {
     "test": "npm run test --workspaces --if-present",
@@ -24,12 +24,14 @@
     "apps/*",
     "packages/*"
   ],
-  "version": "0.0.0",
+  "version": "1.0.0",
   "lint-staged": {
     "*.*": "prettier --write"
   },
   "engines": {
     "node": ">=20.0.0"
   },
-  "packageManager": "npm@10.2.4"
+  "packageManager": "npm@10.2.4",
+  "description": "A GitHub bounty project.",
+  "license": "MIT"
 }
