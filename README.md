@@ -119,3 +119,16 @@ To run tests for a single workspace:
 ```bash
 npm test --workspace=apps/backend
 ```
+# Monorepo
+
+## Prerequisites
+
+- Node.js 20+ (see `.nvrvc`)
+- npm 10.2.4+
+
+## Getting Started
+
+```bash
+nvm use
+npm install
+```
