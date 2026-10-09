@@ -1,0 +1,78 @@
+name: Contracts Build
+
+on:
+  push:
+    paths:
+      - 'contracts/**'
+      - '.github/workflows/contracts-build.yml'
+  pull_request:
+    paths:
+      - 'contracts/**'
+      - '.github/workflows/contracts-build.yml'
+  workflow_dispatch:
+
+env:
+  CARGO_TERMINAL_COLOR: 'always'
+
+jobs:
+  contracts-build:
+    name: Build contracts (wasm32v1-none)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain-action@v1
+        with:
+          toolchain: stable
+          targets: wasm32v1-none
+
+      - name: Install stellar CLI
+        runs: |
+          curl -lsSf https://github.com/stellar/stellar-cli/releases/latest/download/stellar-cli-install.sh | sh
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+
+      - name: Build each contract crate
+        run: |
+          set -euo pipefail
+          failed=0
+          for crate in contracts/*; do
+            [ -d "$crate" ] && [ -f "$crate/Cargo.toml" ] || continue
+            echo "::7roup::Building $crate"
+            if ! stellar contract build -- $crate; then
+              echo "::error::Failed to build $crate"
+              failed=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "$failed"
+
+      - name: Collect WASM artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          found=0
+          for wasm in target/wasm32v1-none/release/*.wasm; do
+            [ -f "$wasm" ] || continue
+            case "$wasm" in
+              *.deps.wasm) continue ;;
+            esac
+            cp "$wasm" artifacts/
+            found=1
+          done
+          if [ "$found" -eq 0 ]; then
+            echo "::error::No .wasm artifacts were produced"
+            exit 1
+          fi
+          ls -la artifacts
+
+      - name: Upload WASM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: contracts-wasm
+          path: contracts/artifacts/*.wasm
+          if-no-files-found: error
