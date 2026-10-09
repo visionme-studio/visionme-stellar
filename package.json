@@ -1,12 +1,12 @@
 {
-  "name": "monorepo",
+  "name": "stellar-startup",
   "private": true,
   "scripts": {
-    "test": "turbo run test",
+    "test": "npm run test --workspaces",
     "prepare": "husky install",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "dev": "next dev",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "dev": "npm run dev --workspaces",
     "format": "prettier --write .",
     "postinstall": "patch-package",
     "dev_typecheck": "turbo run dev_typecheck"
@@ -16,7 +16,7 @@
     "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.0.0",
-    "typescript": "^5.4.2",
+    "typescript": "^5.0.0",
     "typescript-eslint": "^8.0.0",
     "turbo": "^2.0.0"
   },
