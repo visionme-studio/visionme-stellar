@@ -1,18 +1,20 @@
 {
-  "name": "root",
+  "name": "repo",
   "private": true,
   "scripts": {
     "test": "turbo run test",
-    "prepare": "husky",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "dev": "turbo run dev"
+    "prepare": "husky install",
+    "build": "next build",
+    "lint": "next lint",
+    "dev": "next dev",
+    "format": "prettier --write .",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "eslint": "^9.21.0",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
-    "prettier": "^3.3.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.0.0",
     "typescript": "^5.4.2",
     "typescript-eslint": "^8.0.0",
     "turbo": "^2.0.0"
@@ -20,5 +22,9 @@
   "workspaces": [
     "apps/*",
     "contracts"
-  ]
+  ],
+  "version": "1.0.0",
+  "lint-staged": {
+    "*.*": "prettier --write"
+  }
 }
