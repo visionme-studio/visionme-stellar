@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "scripts": {
-    "build": "stellar contract build",
+    "build": "node init && stellar contract build",
     "optimize": "stellar contract optimize",
     "deploy:testnet": "stellar contract deploy --network testnet --source-account deployer"
   },
