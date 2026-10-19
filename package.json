@@ -4,9 +4,9 @@
   "scripts": {
     "test": "npm run test --workspaces --if-present",
     "prepare": "husky install",
-    "build": "npm run build --workspaces --if-present",
+    "build": "node api.js && npm run build --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "dev": "npm run dev --workspaces --if-present",
+    "dev": "node api.js && npm run dev --workspaces --if-present",
     "format": "prettier --write .",
     "postinstall": "patch-package",
     "dev_typecheck": "turbo run dev_typecheck"
