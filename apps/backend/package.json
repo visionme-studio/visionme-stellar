@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "test": "vitest",
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "tsx-supervisor src/index.ts",
+    "build": "node init && tsc",
+    "start": "node init && node dist/index.js",
+    "dev": "node init && tsx-supervisor src/index.ts",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
