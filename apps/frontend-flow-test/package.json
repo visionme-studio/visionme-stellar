@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "vite build",
+    "build": "node init && vite build",
     "test": "vitest run --coverage",
     "lint": "eslint .",
     "dev_typecheck": "tsc --noEmit"
